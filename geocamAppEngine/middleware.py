@@ -28,13 +28,14 @@ class LazyUser(object):
                 try:
                     request._cached_user = User.objects.get(email=user.email())
                 except ObjectDoesNotExist:
-                    u = User.objects.create_user(user.nickname(),
-                                                 user.email())
                     if users.is_current_user_admin():
-                        u.is_staff = True
-                        u.is_superuser = True
-                        u.save()
-                    request._cached_user = u
+                        # bootstrap -- treat any app engine admin user as a django superuser
+                        u = User.objects.create_superuser(user.nickname(),
+                                                          user.email())
+                        request._cached_user = u
+                    else:
+                        # user logged in through app engine but not somebody we know
+                        request._cached_user = AnonymousUser()
             else:
                 request._cached_user = AnonymousUser()
         return request._cached_user

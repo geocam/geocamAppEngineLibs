@@ -111,9 +111,9 @@ class BlobReaderWrapper(blobstore.BlobReader):
         pass  # BlobReader is already open, duh
 
 
-class AppEngineBlobStorage(Storage):
+class BlobStorage(Storage):
     def __init__(self):
-        super(AppEngineBlobStorage, self).__init__()
+        super(BlobStorage, self).__init__()
 
     @classmethod
     def _getBlob(cls, name):
@@ -152,7 +152,7 @@ class AppEngineBlobStorage(Storage):
         blobstore.BlobInfo.delete(self._getBlob(name))
 
     def exists(self, name):
-        logging.debug("AppEngineBlobStorage.exists() was called.")
+        logging.debug("BlobStorage.exists() was called.")
         result = (self._getBlob(name) is not None)
         logging.info("blobstore key %s exists = %s" % (name, result))
         return result
@@ -176,7 +176,7 @@ class AppEngineBlobStorage(Storage):
     ##
 
 def test():
-    bs = AppEngineBlobStorage()
+    bs = BlobStorage()
     key = bs._save('foo.jpg', 'content')
     print 'file exists = %s' % bs.exists(key)
     f = bs._open(key)
