@@ -31,7 +31,8 @@ class LazyUser(object):
                     if users.is_current_user_admin():
                         # bootstrap -- treat any app engine admin user as a django superuser
                         u = User.objects.create_superuser(user.nickname(),
-                                                          user.email())
+                                                          user.email(),
+                                                          None)
                         request._cached_user = u
                     else:
                         # user logged in through app engine but not somebody we know
