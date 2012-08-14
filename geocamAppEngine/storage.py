@@ -133,10 +133,7 @@ class BlobStorage(Storage):
 
         # Open the file and write to it
         with files.open(file_name, 'a') as f:
-            if not isinstance(content, basestring):
-                # in case content is a file-like object
-                content = content.read()
-            f.write(content)
+            f.write(content.read())
 
         # Finalize the file. Do this before attempting to read it.
         files.finalize(file_name)
