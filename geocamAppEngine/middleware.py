@@ -17,7 +17,7 @@
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.exceptions import ObjectDoesNotExist
 
-from google.appengine.api import users
+from google.appengine.api import users, backends
 
 
 class LazyUser(object):
@@ -38,7 +38,19 @@ class LazyUser(object):
                         # user logged in through app engine but not somebody we know
                         request._cached_user = AnonymousUser()
             else:
-                request._cached_user = AnonymousUser()
+                onBackEndInstance = (backends.get_backend() != None)
+                if onBackEndInstance:
+                    # if the request was forwarded to a backend
+                    # instance, it will not have any credentials
+                    # attached, but should be treated as an admin
+                    # request. bit of a hack.
+                    request._cached_user = User(username='bogus',
+                                                email='bogus@example.com',
+                                                is_superuser=True,
+                                                is_staff=True,
+                                                is_active=True)
+                else:
+                    request._cached_user = AnonymousUser()
         return request._cached_user
 
 
