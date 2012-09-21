@@ -23,7 +23,12 @@ from google.appengine.api import users, backends
 class LazyUser(object):
     def __get__(self, request, obj_type=None):
         if not hasattr(request, '_cached_user'):
-            user = users.get_current_user()
+            if request.path.startswith('/public'):
+                # treat requests on /public URLs as unauthenticated so
+                # we can avoid hitting the user table
+                user = None
+            else:
+                user = users.get_current_user()
             if user:
                 try:
                     request._cached_user = User.objects.get(email=user.email())
