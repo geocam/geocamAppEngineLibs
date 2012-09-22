@@ -133,7 +133,9 @@ class BlobStorage(Storage):
 
         # Open the file and write to it
         with files.open(file_name, 'a') as f:
-            f.write(content.read())
+            val = content.read()
+            contentLength = len(val)
+            f.write(val)
 
         # Finalize the file. Do this before attempting to read it.
         files.finalize(file_name)
@@ -141,7 +143,8 @@ class BlobStorage(Storage):
         # Get the file's blob key
         blob_key = files.blobstore.get_blob_key(file_name)
 
-        logging.info("_save wrote %s with content type %s" % (blob_key, mime_type))
+        logging.info("_save wrote %s with content type %s, %s bytes"
+                     % (blob_key, mime_type, contentLength))
 
         return str(blob_key)
 
